@@ -27,5 +27,21 @@ CREATE TABLE employee (
     PRIMARY KEY (id)
 );
 
+INSERT INTO employee (first_name, last_name, role_id)
+VALUES 
+("Jordan", "O'Neal", 1),
+("Sierra", "Raso", 2);
 
-    
+INSERT INTO role (title, salary)
+VALUES
+("Sales Lead", 45000),
+("Salesperson", 10000);
+
+SELECT * FROM role;
+SELECT * FROM employee;
+
+SELECT first_name, last_name, title
+FROM employee
+INNER JOIN role ON employee.id = role.id
+
+
