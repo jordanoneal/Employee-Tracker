@@ -18,15 +18,15 @@ connection.connect(function (err) {
     start();
 });
 
+let questions = [{
+    name: "action",
+    type: "list",
+    message: "what would you like to do?",
+    choices: ["View All Employees", "Add Employee", "Update Employee Role", "EXIT"]
+}]
+
 function start() {
-    inquirer.prompt([
-        {
-            name: "action",
-            type: "list",
-            message: "what would you like to do?",
-            choices: ["View All Employees", "Add Employee", "Update Employee Role", "EXIT"]
-        }
-    ])
+    inquirer.prompt(questions)
         .then(function (answer) {
 
             // based on their answer call the function
@@ -63,24 +63,6 @@ function addEmployee() {
             type: "list",
             message: "what is the employee's role?",
             choices: ["Sales Lead", "Software Engineer"]
-        },
-        {
-            name: "roleid",
-            type: "input",
-            message: "what is their role id?"
-        },
-
-        {
-            name: 'department',
-            type: "list",
-            message: "what department is the employee part of?",
-            choices: ["Sales", "Engineering",]
-        },
-        {
-            name: "manager",
-            type: "list",
-            message: "who is the employee's Manager?",
-            choices: ["Derek Boone", "Rosemary Petty"]
         }
     ])
         .then(function (answer) {
@@ -91,17 +73,13 @@ function addEmployee() {
                 {
                     first_name: answer.firstName,
                     last_name: answer.lastName,
-                    role_id: parseInt(answer.roleid)
                 },
                 function (err) {
                     if (err) throw err;
-                    // console.log("employee was added sucessfully!")
-                    // start();
                 }
             );
-            console.log(query.sql);
 
-            // insert role into the db with that info 
+            // creating new query for role 
             let query2 = connection.query(
                 "INSERT INTO role SET ?",
                 {
@@ -111,25 +89,12 @@ function addEmployee() {
                     if (err) throw err;
                 }
             )
-            console.log(query2.sql);
             console.log("employee was added sucessfully!")
 
             start();
 
         });
 
-}
-
-function updateRole() {
-
-    inquirer.prompt([
-        {
-            name:"whichEmployee",
-            type: "list",
-            message: "which employee's role do you want to update?",
-            choices: "#"
-        }
-    ])
 }
 
 function viewEmployees() {
@@ -139,4 +104,24 @@ function viewEmployees() {
         start();
     })
 
+}
+
+function updateRole() {
+    connection.query("SELECT first_name, last_name FROM employee", function (err, res) {
+        if (err) throw err;
+
+        let employeeChoices = [];
+        for (let i = 0; i < res.length; i++) {
+            employeeChoices.push(`${res[i].first_name} ${res[i].last_name}`);
+        }
+
+        inquirer.prompt([
+            {
+                type: "list",
+                message: "Which employee's role do you want to update?",
+                name: "updateEmployee",
+                choices: employeeChoices
+            }
+        ])
+    })
 }
